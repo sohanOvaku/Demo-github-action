@@ -1,8 +1,14 @@
 name: Print Release File Name
 
+# on:
+#   release:
+#     types: [published]
+
 on:
-  release:
-    types: [published]
+  repository_dispatch:
+    types: [trigger-upload]
+
+    
 
 jobs:
   print-release-file:
