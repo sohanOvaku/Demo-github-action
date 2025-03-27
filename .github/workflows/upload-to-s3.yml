@@ -40,6 +40,6 @@ jobs:
             exit 1
           fi
 
-          echo "ZIP_FILE=$ZIP_FILE" >> $GITHUB_ENV
-          echo "ZIP_URL=$ZIP_URL" >> $GITHUB_ENV
+          echo "ZIP_FILE=$ZIP_FILE" 
+          echo "ZIP_URL=$ZIP_URL"
 
