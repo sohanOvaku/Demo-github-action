@@ -5,8 +5,10 @@ name: Print Release File Name
 #     types: [published]
 
 on:
-  repository_dispatch:
-    types: [trigger-upload]
+  workflow_run:
+    workflows: ["Create Release"]
+    types:
+      - completed
 
     
 
