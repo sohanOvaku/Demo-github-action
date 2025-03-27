@@ -1,4 +1,4 @@
-name: Create Release and Attach hello.txt
+name: Create Release 
 
 on:
   push:
@@ -18,14 +18,14 @@ jobs:
 
       - name: Get Latest Tag
         id: get_tag
-        run: echo "tag=v1.0.0" >> $GITHUB_ENV
+        run: echo "tag=v1.0.1" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.tag }}
-          release_name: "Release ${{ env.tag }}"
+          name: "Release ${{ env.tag }}"
           draft: false
           prerelease: false
           generate_release_notes: true
