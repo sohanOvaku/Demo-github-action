@@ -18,7 +18,7 @@ jobs:
 
       - name: Get Latest Tag
         id: get_tag
-        run: echo "tag=v1.0.2" >> $GITHUB_ENV
+        run: echo "tag=v1.0.3" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         id: create_release

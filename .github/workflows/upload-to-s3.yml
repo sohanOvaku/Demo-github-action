@@ -1,0 +1,19 @@
+name: Print Release File Name
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  print-release-file:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Get Release Assets
+        run: |
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest)
+          ASSET_NAME=$(echo "$LATEST_RELEASE" | jq -r '.assets[0].name')
+          echo "Release file name: $ASSET_NAME"
