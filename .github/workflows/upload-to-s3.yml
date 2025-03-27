@@ -29,8 +29,17 @@ jobs:
           # Extract release tag name
           TAG_NAME=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
 
-          # Construct the expected zip file name
-          ZIP_FILE="${REPO_NAME}-${TAG_NAME}.zip"
+          # Construct expected zip file name
+          ZIP_FILE="hello.zip"
 
-          echo "Release zip file name: $ZIP_FILE"
+          # Find the browser download URL for the zip file
+          ZIP_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name == "hello.zip") | .browser_download_url')
+
+          if [ -z "$ZIP_URL" ] || [ "$ZIP_URL" == "null" ]; then
+            echo "No release zip file found!"
+            exit 1
+          fi
+
+          echo "ZIP_FILE=$ZIP_FILE" >> $GITHUB_ENV
+          echo "ZIP_URL=$ZIP_URL" >> $GITHUB_ENV
 
