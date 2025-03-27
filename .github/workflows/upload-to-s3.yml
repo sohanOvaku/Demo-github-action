@@ -22,17 +22,15 @@ jobs:
 
       - name: Get Release Assets
         run: |
-          LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest)
 
-          # Extract the tag name
+          REPO_NAME=$(basename ${{ github.repository }})
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest)
+          
+          # Extract release tag name
           TAG_NAME=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
 
-          # Extract the zipball URL (GitHub auto-generated zip)
-          ZIP_URL=$(echo "$LATEST_RELEASE" | jq -r '.zipball_url')
+          # Construct the expected zip file name
+          ZIP_FILE="${REPO_NAME}-${TAG_NAME}.zip"
 
-          if [ -n "$ZIP_URL" ] && [ "$ZIP_URL" != "null" ]; then
-            echo "Release zip file URL: $ZIP_URL"
-            echo "Expected file name: ${{ github.repository }}-$TAG_NAME.zip"
-          else
-            echo "No release zip file found"
-          fi
+          echo "Release zip file name: $ZIP_FILE"
+
