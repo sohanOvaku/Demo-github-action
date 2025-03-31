@@ -27,7 +27,7 @@ jobs:
           TAG_NAME=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
 
           # Construct expected zip file name
-          ZIP_FILE="hello-'$TAG_NAME'.zip"
+          ZIP_FILE="hello-$TAG_NAME.zip"
 
           # Find the browser download URL for the zip file
           ZIP_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name == "hello-'$TAG_NAME'.zip") | .browser_download_url')
