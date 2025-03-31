@@ -17,7 +17,7 @@ jobs:
 
       - name: Get Latest Tag
         id: get_tag
-        run: echo "tag=v1.0.6" >> $GITHUB_ENV
+        run: echo "tag=v1.0.7" >> $GITHUB_ENV
 
       # - name: Set Variables
       #   run: echo "ZIP_FILE=hello-${{ env.tag }}.zip" >> $GITHUB_ENV
