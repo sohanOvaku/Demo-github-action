@@ -19,9 +19,13 @@ jobs:
         id: get_tag
         run: echo "tag=v1.0.6" >> $GITHUB_ENV
 
+      # - name: Set Variables
+      #   run: echo "ZIP_FILE=hello-${{ env.tag }}.zip" >> $GITHUB_ENV
+
       - name: Create Zip File
         run: |
-          zip hello.zip hello.txt
+          ZIP_FILE=hello-${{ env.tag }}.zip
+          zip "$ZIP_FILE" hello.txt
 
       - name: Create GitHub Release
         id: create_release
@@ -33,8 +37,8 @@ jobs:
           prerelease: false
           generate_release_notes: true
 
-      - name: Upload hello.zip to Release
+      - name: Upload "$ZIP_FILE" to Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.tag }}
-          files: hello.zip
+          files: "$ZIP_FILE"
