@@ -32,6 +32,11 @@ jobs:
           echo "RELEASE_TAG=$TAG_NAME" >> $GITHUB_ENV
           echo "Latest release tag is: $RELEASE_TAG"
 
+      - name: Show release tag
+        run: |
+          # Now, in the next step, the RELEASE_TAG will be available
+          echo "Latest release tag is: $RELEASE_TAG"
+
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
