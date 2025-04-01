@@ -51,9 +51,14 @@ jobs:
           docker push docker.io/sohanovaku/demo-github-action:$RELEASE_TAG
           docker save demo-github-action:$RELEASE_TAG | gzip > demo-github-action-$RELEASE_TAG.tar.gz
       
-      - name: Upload Docker image to Release Assets
-        uses: actions/upload-artifact@v2
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
         with:
-          name: demo-github-action-image
-          path: demo-github-action-$RELEASE_TAG.tar.gz
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Upload Docker image tar to Google Cloud Storage
+        run: |
+          gsutil cp demo-github-action-$RELEASE_TAG.tar.gz gs://demo-artifact/demo-github-action-$RELEASE_TAG.tar.gz
+
 
