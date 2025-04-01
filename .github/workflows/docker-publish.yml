@@ -49,4 +49,5 @@ jobs:
           docker build -t docker.io/sohanovaku/demo-github-action:latest -t docker.io/sohanovaku/demo-github-action:$RELEASE_TAG .
           docker push docker.io/sohanovaku/demo-github-action:latest
           docker push docker.io/sohanovaku/demo-github-action:$RELEASE_TAG
+          docker save demo-github-action:$RELEASE_TAG | gzip > demo-github-action-$RELEASE_TAG.tar.gz
 
