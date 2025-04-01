@@ -50,4 +50,10 @@ jobs:
           docker push docker.io/sohanovaku/demo-github-action:latest
           docker push docker.io/sohanovaku/demo-github-action:$RELEASE_TAG
           docker save demo-github-action:$RELEASE_TAG | gzip > demo-github-action-$RELEASE_TAG.tar.gz
+      
+      - name: Upload Docker image to Release Assets
+        uses: actions/upload-artifact@v2
+        with:
+          name: demo-github-action-image
+          path: demo-github-action-$RELEASE_TAG.tar.gz
 
