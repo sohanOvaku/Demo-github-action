@@ -46,6 +46,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          RELEASE_TAG=$(echo "$RELEASE_TAG" | tr '[:upper:]' '[:lower:]')
+
           docker build -t docker.io/sohanOvaku/demo-github-action:latest -t docker.io/sohanOvaku/demo-github-action:$RELEASE_TAG .
           docker push docker.io/sohanOvaku/demo-github-action:latest
           docker push docker.io/sohanOvaku/demo-github-action:$RELEASE_TAG
