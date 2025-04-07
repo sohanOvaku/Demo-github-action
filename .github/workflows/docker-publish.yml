@@ -49,7 +49,12 @@ jobs:
           docker build -t docker.io/sohanovaku/demo-github-action:latest -t docker.io/sohanovaku/demo-github-action:$RELEASE_TAG .
           docker push docker.io/sohanovaku/demo-github-action:latest
           docker push docker.io/sohanovaku/demo-github-action:$RELEASE_TAG
-          docker save demo-github-action:$RELEASE_TAG | gzip > demo-github-action-$RELEASE_TAG.tar.gz
+          # docker save demo-github-action:$RELEASE_TAG | gzip > demo-github-action-$RELEASE_TAG.tar.gz
+
+          IMG="sohanovaku/demo-github-action"
+          SAFE_IMG_NAME=${IMG//\//_}
+          docker save $IMG:$RELEASE_TAG -o ${SAFE_IMG_NAME}_${RELEASE_TAG}.tar
+          echo "TAR_FILE=${SAFE_IMG_NAME}_${RELEASE_TAG}.tar" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -58,11 +63,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Uplaod Docker Image to S3
+      # - name: Uplaod Docker Image to S3
+      #   run: |
+      #     IMG="sohanovaku/demo-github-action"
+      #     # RELEASE_TAG="${{ steps.release-tag-trim.outputs.release-tag }}" //not need for my script
+      #     aws s3 cp ${IMG}_${RELEASE_TAG}.tar "s3://${{ secrets.S3_BUCKET_NAME }}/releases/${IMG}_${RELEASE_TAG}.tar"
+      - name: Upload Docker Image to S3
         run: |
           IMG="sohanovaku/demo-github-action"
-          # RELEASE_TAG="${{ steps.release-tag-trim.outputs.release-tag }}" //not need for my script
-          aws s3 cp ${IMG}_${RELEASE_TAG}.tar "s3://${{ secrets.S3_BUCKET_NAME }}/releases/${IMG}_${RELEASE_TAG}.tar"
+          SAFE_IMG_NAME=${IMG//\//_}
+          TAR_FILE=${SAFE_IMG_NAME}_${RELEASE_TAG}.tar
+          aws s3 cp $TAR_FILE "s3://${{ secrets.S3_BUCKET_NAME }}/releases/$TAR_FILE"
 
       - name: Purge previous message from SQS
         run: |
@@ -74,8 +85,9 @@ jobs:
       - name: Send SQS Notification
         run: |
           IMG="sohanovaku/demo-github-action"
+          SAFE_IMG_NAME=${IMG//\//_}
           RELEASE_TAG="${{env.RELEASE_TAG}}" //not need for my script
-          MESSAGE_BODY='{"file": "'$IMG'_'$RELEASE_TAG'.tar", "tag": "'$RELEASE_TAG'", "status": "uploaded"}'
+          MESSAGE_BODY='{"file": "'$SAFE_IMG_NAME'_'$RELEASE_TAG'.tar", "tag": "'$RELEASE_TAG'", "status": "uploaded"}'
           aws sqs send-message \
             --queue-url ${{ secrets.SQS_QUEUE_URL }} \
             --message-body "$MESSAGE_BODY" \
