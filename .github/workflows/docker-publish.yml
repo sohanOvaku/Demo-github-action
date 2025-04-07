@@ -50,40 +50,6 @@ jobs:
           docker push docker.io/sohanovaku/demo-github-action:latest
           docker push docker.io/sohanovaku/demo-github-action:$RELEASE_TAG
           docker save demo-github-action:$RELEASE_TAG | gzip > demo-github-action-$RELEASE_TAG.tar.gz
-      
-      # - name: Set up Google Cloud SDK
-      #   uses: google-github-actions/setup-gcloud@v2
-      #   with:
-      #     project_id: ${{ secrets.GCP_PROJECT_ID }}
-      #     credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      # - name: Upload Docker image tar to Google Cloud Storage
-      #   run: |
-      #     gsutil cp demo-github-action-$RELEASE_TAG.tar.gz gs://demo-artifact/demo-github-action-$RELEASE_TAG.tar.gz
-
-
-# - name: Create release tag
-#         run: |
-#           IMG="core4ce/rampart-nifi"
-#           ECR_IMG="${{ secrets.ECR_REPO_URL }}"
-#           STABLE_TAG="${{ steps.stable-tag-trim.outputs.stable-tag }}"
-#           RELEASE_TAG="${{ steps.release-tag-trim.outputs.release-tag }}"
-#           if ! [[ $(docker manifest inspect "${IMG}:${RELEASE_TAG}") > /dev/null ]]; then
-#             docker pull "${IMG}:${STABLE_TAG}"
-#             docker tag "${IMG}:${STABLE_TAG}" "${IMG}:${RELEASE_TAG}"
-#             docker push "${IMG}:${RELEASE_TAG}"
-#             docker tag "${IMG}:${STABLE_TAG}" "${ECR_IMG}:${RELEASE_TAG}"
-#             docker push "${ECR_IMG}:${RELEASE_TAG}"
-#           else
-#             echo "error: Release tag already exists"
-#             exit 1
-#           fi
-
-#       - name: Save Docker Image as tar
-#         run: |
-#            IMG="core4ce/rampart-nifi"
-#            RELEASE_TAG="${{ steps.release-tag-trim.outputs.release-tag }}"
-#            docker save -o ${IMG}_{$RELEASE_TAG}.tar "${IMG}:${RELEASE_TAG}"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -96,7 +62,7 @@ jobs:
         run: |
           IMG="sohanovaku/demo-github-action"
           # RELEASE_TAG="${{ steps.release-tag-trim.outputs.release-tag }}" //not need for my script
-          aws s3 cp ${IMG}_${env.RELEASE_TAG}.tar "s3://${{ secrets.S3_BUCKET_NAME }}/releases/${IMG}_${RELEASE_TAG}.tar"
+          aws s3 cp ${IMG}_${RELEASE_TAG}.tar "s3://${{ secrets.S3_BUCKET_NAME }}/releases/${IMG}_${RELEASE_TAG}.tar"
 
       - name: Purge previous message from SQS
         run: |
@@ -108,7 +74,7 @@ jobs:
       - name: Send SQS Notification
         run: |
           IMG="sohanovaku/demo-github-action"
-          RELEASE_TAG="${{env.RELEASE_TAG}}" //not need for my script
+          RELEASE_TAG="${{RELEASE_TAG}}" //not need for my script
           MESSAGE_BODY='{"file": "'$IMG'_'RELEASE_TAG'.tar", "tag": "'$RELEASE_TAG'", "status": "uploaded"}'
           aws sqs send-message \
             --queue-url ${{ secrets.SQS_QUEUE_URL }} \
