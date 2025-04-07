@@ -86,7 +86,7 @@ jobs:
         run: |
           IMG="sohanovaku/demo-github-action"
           SAFE_IMG_NAME=${IMG//\//_}
-          RELEASE_TAG="${{env.RELEASE_TAG}}" //not need for my script
+          RELEASE_TAG="${{env.RELEASE_TAG}}"
           MESSAGE_BODY='{"file": "'$SAFE_IMG_NAME'_'$RELEASE_TAG'.tar", "tag": "'$RELEASE_TAG'", "status": "uploaded"}'
           aws sqs send-message \
             --queue-url ${{ secrets.SQS_QUEUE_URL }} \
