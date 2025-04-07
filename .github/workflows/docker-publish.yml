@@ -74,8 +74,8 @@ jobs:
       - name: Send SQS Notification
         run: |
           IMG="sohanovaku/demo-github-action"
-          # RELEASE_TAG="${{env.RELEASE_TAG}}" //not need for my script
-          MESSAGE_BODY='{"file": "'$IMG'_'env.RELEASE_TAG'.tar", "tag": "'$RELEASE_TAG'", "status": "uploaded"}'
+          RELEASE_TAG="${{env.RELEASE_TAG}}" //not need for my script
+          MESSAGE_BODY='{"file": "'$IMG'_'$RELEASE_TAG'.tar", "tag": "'$RELEASE_TAG'", "status": "uploaded"}'
           aws sqs send-message \
             --queue-url ${{ secrets.SQS_QUEUE_URL }} \
             --message-body "$MESSAGE_BODY" \
