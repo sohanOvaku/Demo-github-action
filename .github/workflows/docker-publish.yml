@@ -72,7 +72,11 @@ jobs:
         run: |
           IMG="sohanovaku/demo-github-action"
           SAFE_IMG_NAME=${IMG//\//_}
-          TAR_FILE=${SAFE_IMG_NAME}_${RELEASE_TAG}.tar
+
+          CUSTOM_IMG="demo"
+          docker tag ${IMG}:${RELEASE_TAG} ${CUSTOM_IMG}:${RELEASE_TAG}
+
+          TAR_FILE=${CUSTOM_IMG}_${RELEASE_TAG}.tar
           aws s3 cp $TAR_FILE "s3://${{ secrets.S3_BUCKET_NAME }}/releases/$TAR_FILE"
 
       - name: Purge previous message from SQS
