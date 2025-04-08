@@ -89,7 +89,7 @@ jobs:
 
       - name: Send SQS Notification
         run: |
-          IMG="sohanovaku/demo-github-action"
+          IMG="demo"
           SAFE_IMG_NAME=${IMG//\//_}
           RELEASE_TAG="${{env.RELEASE_TAG}}"
           MESSAGE_BODY='{"file": "'$SAFE_IMG_NAME'_'$RELEASE_TAG'.tar", "tag": "'$RELEASE_TAG'", "status": "uploaded"}'
