@@ -55,6 +55,14 @@ jobs:
           # SAFE_IMG_NAME=${IMG//\//_}
           # docker save $IMG:$RELEASE_TAG -o ${SAFE_IMG_NAME}_${RELEASE_TAG}.tar
           # echo "TAR_FILE=${SAFE_IMG_NAME}_${RELEASE_TAG}.tar" >> $GITHUB_ENV
+      
+      - name: Save Docker Image as tar
+        run: |
+          IMG="sohanovaku/demo-github-action"
+          SAFE_IMG_NAME=${IMG//\//_}
+
+          CUSTOM_IMG="demo"
+          docker save -o ${SAFE_IMG_NAME}_${RELEASE_TAG}.tar ${IMG}:${RELEASE_TAG}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -74,11 +82,11 @@ jobs:
           SAFE_IMG_NAME=${IMG//\//_}
 
           CUSTOM_IMG="demo"
-          docker tag ${IMG}:${RELEASE_TAG} ${CUSTOM_IMG}:${RELEASE_TAG}
-          docker save -o ${CUSTOM_IMG}_${RELEASE_TAG}.tar ${CUSTOM_IMG}:${RELEASE_TAG}
+          # docker tag ${IMG}:${RELEASE_TAG} ${CUSTOM_IMG}:${RELEASE_TAG}
+          # docker save -o ${SAFE_IMG_NAME}_${RELEASE_TAG}.tar ${IMG}:${RELEASE_TAG}
 
           # TAR_FILE=${CUSTOM_IMG}_${RELEASE_TAG}.tar
-          aws s3 cp ${CUSTOM_IMG}_${RELEASE_TAG}.tar "s3://${{ secrets.S3_BUCKET_NAME }}/releases/${CUSTOM_IMG}_${RELEASE_TAG}.tar"
+          aws s3 cp ${SAFE_IMG_NAME}_${RELEASE_TAG}.tar "s3://${{ secrets.S3_BUCKET_NAME }}/releases/${SAFE_IMG_NAME}_${RELEASE_TAG}.tar"
 
       - name: Purge previous message from SQS
         run: |
@@ -89,7 +97,7 @@ jobs:
 
       - name: Send SQS Notification
         run: |
-          IMG="demo"
+          IMG="sohanovaku/demo-github-action"
           SAFE_IMG_NAME=${IMG//\//_}
           RELEASE_TAG="${{env.RELEASE_TAG}}"
           MESSAGE_BODY='{"file": "'$SAFE_IMG_NAME'_'$RELEASE_TAG'.tar", "tag": "'$RELEASE_TAG'", "status": "uploaded"}'
